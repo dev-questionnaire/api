@@ -1,0 +1,56 @@
+name: testing
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  phpStanPsalm:
+    name: phpStan & Psalm test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout project
+        uses: actions/checkout@v1
+
+      - name: composer install
+        run: composer install
+
+      - name: run phpStan
+        run: vendor/bin/phpstan analyse -c phpStan.neon
+
+      - name: run Psalm
+        run: vendor/bin/psalm
+  Test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout project
+        uses: actions/checkout@v1
+
+      - name: composer install
+        run: composer install
+
+      - name: start docker
+        run: docker-compose up -d
+
+      - name: show docker containers
+        run: docker ps -a
+
+      - name: Wait for MySQL
+        run: sleep 10
+
+      - name: create database
+        run: php bin/console --env=test doctrine:database:create
+
+      - name: migrate
+        run: php bin/console --env=test doctrine:migrations:migrate --no-interaction
+
+      - name: run phpunit
+        run: php vendor/bin/phpunit
+
+      - name: run infection
+        run: php vendor/bin/infection
+
+      - name: Stop docker
+        if: always()
+        run: docker-compose down
