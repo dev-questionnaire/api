@@ -21,4 +21,5 @@
 
 ###> custom ###
 /infection/
+.php-cs-fixer.cache
 ###< custom ###
