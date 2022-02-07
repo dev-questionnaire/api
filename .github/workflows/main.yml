@@ -1,9 +1,9 @@
 name: testing
 on:
   push:
-    branches: [ main ]
+    branches: [ client ]
   pull_request:
-    branches: [ main ]
+    branches: [ client ]
 jobs:
   cs-fixer:
     name: cs-fixer
