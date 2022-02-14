@@ -22,4 +22,5 @@
 ###> custom ###
 /infection/
 .php-cs-fixer.cache
+/coverage/
 ###< custom ###

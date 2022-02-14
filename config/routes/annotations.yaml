@@ -5,3 +5,7 @@ controllers:
 kernel:
     resource: ../../src/Kernel.php
     type: annotation
+#Custom
+user_controller:
+    resource: ../../src/Component/User/Communication/
+    type: annotation
