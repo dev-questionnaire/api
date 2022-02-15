@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends CustomAbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepository         $userRepository,
         private EntityManagerInterface $entityManager,
     ) {
         parent::__construct($this->userRepository, $this->entityManager);
@@ -77,13 +77,8 @@ class UserController extends CustomAbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        /** @var User $user */
         $user = $this->userRepository->findOneBy(['token' => $token]);
-
-        if (!$user instanceof User) {
-            return $this->json([
-                'message' => 'no user found',
-            ]);
-        }
 
         return $this->json([
             'id' => $user->getId(),

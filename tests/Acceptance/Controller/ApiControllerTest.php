@@ -10,17 +10,20 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ApiControllerTest extends WebTestCase
 {
-    private KernelBrowser $client;
+    protected KernelBrowser $client;
+    protected string $apiUrl;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->client = self::createClient();
+
+        $this->apiUrl = self::getContainer()->get(ParameterBagInterface::class)->get('api.url');
     }
 
     public function testRedirect(): void
     {
-        $this->client->request('GET', '/');
+        $this->client->request('GET', $this->apiUrl . '/');
 
         self::assertInstanceOf(RedirectResponse::class, $this->client->getResponse());
     }

@@ -21,26 +21,17 @@ class AuthenticationController extends CustomAbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserRepository $userRepository,
+        private UserRepository         $userRepository,
         private App                    $app,
     ) {
         parent::__construct($this->userRepository, $this->entityManager);
     }
 
     #[Route('/api/login', name: 'api_login', methods: 'POST')]
-    public function login(#[CurrentUser] ?User $user): JsonResponse
+    public function login(#[CurrentUser] ?User $currentUser): JsonResponse
     {
-        //check if logged in
-        if (!$user instanceof User) {
-            return $this->json([
-                'message' => 'bad credentials',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        //reset token and token time
-        $user->setToken('');
-        $user->setTokenTime(null);
-        $this->entityManager->flush();
+        /** @var User $user */
+        $user = $currentUser;
 
         //create token
         $payload = [
@@ -48,13 +39,8 @@ class AuthenticationController extends CustomAbstractController
             'time' => (new \DateTime())->format('Y-m-d_H:i:s'),
         ];
 
+        /** @var string $kernelSecret */
         $kernelSecret = $this->getParameter('kernel.secret');
-
-        if (!is_string($kernelSecret)) {
-            return $this->json([
-                'success' => false,
-            ], Response::HTTP_UNAUTHORIZED);
-        }
 
         $jwt = JWT::encode($payload, $kernelSecret, 'HS256');
 
@@ -114,9 +100,32 @@ class AuthenticationController extends CustomAbstractController
         ], Response::HTTP_ACCEPTED);
     }
 
-    #[Route('/api/logout', name: 'api_logout', methods: 'GET')]
-    public function logout(): Response
+    #[Route('/api/logout', name: 'api_logout', methods: 'POST')]
+    public function logout(Request $request): JsonResponse
     {
-        throw new \Exception("This exception should not be reached!");
+        $content = $this->getContent($request);
+
+        /** @var string $token */
+        $token = $content['token'] ?? '';
+
+        $user = $this->userRepository->findOneBy(['token' => $token]);
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'logout' => false,
+                'error' => 'user not logged in',
+            ]);
+        }
+
+        /** @var string $email */
+        $email = $user->getEmail();
+
+        $user->setToken($email); //So that it only can be via email, because else it findes first user with empty token
+        $user->setTokenTime(null);
+        $this->entityManager->flush();
+
+        return $this->json([
+            'logout' => true,
+        ]);
     }
 }

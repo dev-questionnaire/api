@@ -11,17 +11,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class App
 {
     private string $appUrl;
+    private const depth = 512;
 
     public function __construct(
         private HttpClientInterface $httpClient,
         ParameterBagInterface       $parameterBag,
     ) {
+        /** @var string $url */
         $url = $parameterBag->get('app.url');
-
-        if (!is_string($url)) {
-            throw new \Exception('url musst be string');
-        }
-
         $this->appUrl = $url;
     }
 
@@ -49,6 +46,8 @@ class App
             return ['message' => $exception];
         }
 
-        return (array)json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        /** @var array<array-key, mixed> $arrayRet */
+        $arrayRet = json_decode($content, true, self::depth, JSON_THROW_ON_ERROR);
+        return $arrayRet;
     }
 }

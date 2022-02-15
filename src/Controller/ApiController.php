@@ -22,7 +22,7 @@ class ApiController extends AbstractController
         $this->appUrl = $url;
     }
 
-    #[Route('/', name: 'api_redirect')]
+    #[Route('/', name: 'api_redirect', methods: 'GET')]
     public function redirectToApp(): Response
     {
         //Redirect to App

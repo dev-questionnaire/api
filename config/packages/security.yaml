@@ -21,8 +21,7 @@ security:
             json_login:
                 check_path: api_login
 
-            logout:
-                path: api_logout
+            #logout not needed json_login only checks if credentials are correct logout in frontend ans den request to delete toke and time in api
 
     access_control:
 

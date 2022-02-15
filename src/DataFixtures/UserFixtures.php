@@ -21,13 +21,15 @@ class UserFixtures extends Fixture
         $user_user
             ->setEmail('user@cec.valantic.com')
             ->setPassword($this->userPasswordHasher->hashPassword($user_user, 'user'))
-            ->setRoles(['ROLE_USER']);
+            ->setRoles(['ROLE_USER'])
+            ->setToken('user@cec.valantic.com');
 
         $user_admin = new User();
         $user_admin
             ->setEmail('admin@cec.valantic.com')
             ->setPassword($this->userPasswordHasher->hashPassword($user_user, 'admin'))
-            ->setRoles(['ROLE_ADMIN']);
+            ->setRoles(['ROLE_ADMIN'])
+            ->setToken('admin@cec.valantic.com');
 
         $manager->persist($user_user);
         $manager->persist($user_admin);

@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class AuthenticationControllerLoginTest extends WebTestCase
+class AuthenticationControllerLogoutTest extends WebTestCase
 {
     protected EntityManagerInterface $entityManager;
     protected AuthenticationController $controller;
@@ -25,7 +25,6 @@ class AuthenticationControllerLoginTest extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
 
         $this->client = static::createClient();
         $container = self::getContainer();
@@ -58,12 +57,37 @@ class AuthenticationControllerLoginTest extends WebTestCase
         $connection->close();
     }
 
-    public function testLoginPositiv(): void
+    public function testLogoutNotLoggedIn(): void
+    {
+        $this->client->jsonRequest('POST',
+            $this->apiUrl . '/api/logout', [
+                'token' => '',
+            ]
+        );
+
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertResponseIsSuccessful();
+        self::assertFalse($content['logout']);
+        self::assertSame('user not logged in', $content['error']);
+    }
+
+    public function testLogoutLoggedInPositiv(): void
     {
         $this->client->jsonRequest('POST',
             $this->apiUrl . '/api/login', [
                 'username' => 'admin@cec.valantic.com',
                 'password' => 'admin',
+            ]
+        );
+
+        $user = $this->userRepository->find(2);
+        self::assertInstanceOf(\DateTime::class, $user->getTokenTime());
+
+        $this->client->jsonRequest('POST',
+            $this->apiUrl . '/api/logout', [
+                'token' => $user->getToken(),
             ]
         );
 
@@ -71,49 +95,11 @@ class AuthenticationControllerLoginTest extends WebTestCase
         $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertResponseIsSuccessful('200');
-        self::assertFalse($content['success']); //No connection to 8000
-        //self::assertTrue($content['success']);
-    }
+        self::assertTrue($content['logout']);
 
-    public function testLoginNegativ(): void
-    {
-        $this->client->jsonRequest('POST',
-            $this->apiUrl . '/api/login', [
-                'username' => '',
-                'password' => '',
-            ]
-        );
+        $user = $this->userRepository->find(2);
 
-        $response = $this->client->getResponse();
-        $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        self::assertResponseStatusCodeSame(401);
-        self::assertSame('Invalid credentials.', $content['error']);
-
-        $this->client->jsonRequest('POST',
-            $this->apiUrl . '/api/login', [
-                'username' => 'admin@cec.valantic.com',
-                'password' => 'user',
-            ]
-        );
-
-        $response = $this->client->getResponse();
-        $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        self::assertResponseStatusCodeSame(401);
-        self::assertSame('Invalid credentials.', $content['error']);
-
-        $this->client->jsonRequest('POST',
-            $this->apiUrl . '/api/login', [
-                'username' => 'admin@valantic.com',
-                'password' => 'admin',
-            ]
-        );
-
-        $response = $this->client->getResponse();
-        $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        self::assertResponseStatusCodeSame(401);
-        self::assertSame('Invalid credentials.', $content['error']);
+        self::assertSame('admin@cec.valantic.com', $user->getToken());
+        self::assertNull($user->getTokenTime());
     }
 }

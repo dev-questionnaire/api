@@ -64,7 +64,7 @@ class UserRepositoryTest extends KernelTestCase
         self::assertSame('user@cec.valantic.com', $user->getEmail());
         self::assertSame('user@cec.valantic.com', $user->getUserIdentifier());
         self::assertSame(['ROLE_USER'], $user->getRoles());
-        self::assertSame('', $user->getToken());
+        self::assertSame('user@cec.valantic.com', $user->getToken());
         self::assertNull($user->getTokenTime());
         self::assertTrue($this->userPasswordHasher->isPasswordValid($user, 'user'));
     }
