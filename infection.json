@@ -2,7 +2,12 @@
     "$schema": "vendor/infection/infection/resources/schema.json",
     "source": {
         "directories": [
-            "src/Command"
+            "src"
+        ],
+        "excludes": [
+            "Repository",
+            "Entity",
+            "DataFixtures"
         ]
     },
     "timeout": 100,
