@@ -17,12 +17,8 @@ class ApiController extends AbstractController
     public function __construct(
         ParameterBagInterface $parameterBag
     ) {
+        /** @var string $url */
         $url = $parameterBag->get('app.url');
-
-        if (!is_string($url)) {
-            throw new \Exception('url musst be string');
-        }
-
         $this->appUrl = $url;
     }
 
