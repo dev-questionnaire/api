@@ -42,9 +42,6 @@ jobs:
       - name: composer install
         run: composer install
 
-      - name: start server
-        run: symfony serve -d --port=8001
-
       - name: start docker
         run: docker-compose up -d
 
@@ -69,7 +66,3 @@ jobs:
       - name: Stop docker
         if: always()
         run: docker-compose down
-
-      - name: Stop server
-        if: always()
-        run: symfony server:stop
