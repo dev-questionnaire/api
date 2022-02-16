@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Component\User\Communication;
 
+use App\Component\User\Business\FacadeInterface;
 use App\Controller\CustomAbstractController;
+use App\DataProvider\UserDataProvider;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Service\App;
-use Doctrine\ORM\EntityManagerInterface;
 use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,51 +20,41 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class AuthenticationController extends CustomAbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private UserRepository         $userRepository,
-        private App                    $app,
-    ) {
-        parent::__construct($this->userRepository, $this->entityManager);
+        private FacadeInterface $facade,
+        private App             $app,
+    )
+    {
+        parent::__construct($this->facade);
     }
 
     #[Route('/api/login', name: 'api_login', methods: 'POST')]
-    public function login(#[CurrentUser] ?User $currentUser): JsonResponse
+    public function login(#[CurrentUser] User $currentUser): JsonResponse
     {
-        /** @var User $user */
         $user = $currentUser;
+        $email = $user->getEmail() ?? '';
 
-        //create token
         $payload = [
             'userId' => $user->getId(),
             'time' => (new \DateTime())->format('Y-m-d_H:i:s'),
         ];
-
         /** @var string $kernelSecret */
         $kernelSecret = $this->getParameter('kernel.secret');
 
+
         $jwt = JWT::encode($payload, $kernelSecret, 'HS256');
 
-        //set token in user and add token time
-        $user->setToken($jwt);
-        $user->setTokenTime(new \DateTime('+ 60 Minutes'));
-        $this->entityManager->flush();
+        $this->facade->setToken($email, $jwt);
 
-        $email = $user->getEmail() ?? '';
-
-        //id to finde token in frontend
         $tokenId = $email . '-' . (new \DateTime())->format('Y-m-d_H-i-s');
 
-        //send token to frontend
         $content = $this->app->sendTokenId($tokenId, $jwt);
 
-        //was generated successfully
-        if (!isset($content['generated'])) {
+        if (!isset($content['generated']) || !$content['generated']) {
             return $this->json([
                 'success' => false,
             ]);
         }
 
-        //if everything went right return tokenId and success
         return $this->json([
             'success' => true,
             'tokenId' => $tokenId,
@@ -108,21 +98,16 @@ class AuthenticationController extends CustomAbstractController
         /** @var string $token */
         $token = $content['token'] ?? '';
 
-        $user = $this->userRepository->findOneBy(['token' => $token]);
+        $userDataProvider = $this->facade->findByToken($token);
 
-        if (!$user instanceof User) {
+        if (!$userDataProvider instanceof UserDataProvider) {
             return $this->json([
                 'logout' => false,
                 'error' => 'user not logged in',
-            ]);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
-        /** @var string $email */
-        $email = $user->getEmail();
-
-        $user->setToken($email); //So that it only can be via email, because else it findes first user with empty token
-        $user->setTokenTime(null);
-        $this->entityManager->flush();
+        $this->facade->removeToken($token);
 
         return $this->json([
             'logout' => true,

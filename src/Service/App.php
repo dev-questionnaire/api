@@ -29,22 +29,19 @@ class App
     {
         $url = $this->appUrl . '/token';
 
-        try {
-            $response = $this->httpClient->request(
-                'POST',
-                $url,
-                [
-                    'json' => [
-                        'token' => $token,
-                        'tokenId' => $tokenId,
-                    ],
-                ]
-            );
 
-            $content = $response->getContent();
-        } catch (\Exception $exception) {
-            return ['message' => $exception];
-        }
+        $response = $this->httpClient->request(
+            'POST',
+            $url,
+            [
+                'json' => [
+                    'token' => $token,
+                    'tokenId' => $tokenId,
+                ],
+            ]
+        );
+
+        $content = $response->getContent();
 
         /** @var array<array-key, mixed> $arrayRet */
         $arrayRet = json_decode($content, true, self::depth, JSON_THROW_ON_ERROR);

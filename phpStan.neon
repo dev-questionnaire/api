@@ -5,3 +5,6 @@ parameters:
 	excludePaths:
 		- src/Entity
 		- src/Repository
+		- src/DataProvider
+		- src/DataFixtures
+		- src/TestController

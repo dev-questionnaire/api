@@ -5,9 +5,11 @@
             "src"
         ],
         "excludes": [
+            "DataProvider",
             "Repository",
             "Entity",
-            "DataFixtures"
+            "DataFixtures",
+            "TestController"
         ]
     },
     "timeout": 100,

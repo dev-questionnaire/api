@@ -9,3 +9,8 @@ kernel:
 user_controller:
     resource: ../../src/Component/User/Communication/
     type: annotation
+
+#For test
+app_token:
+    resource: ../../src/TestController/
+    type: annotation

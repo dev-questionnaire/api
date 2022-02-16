@@ -12,6 +12,9 @@
             <directory name="src/DataFixtures" />
             <directory name="src/Entity" />
             <directory name="src/Repository" />
+            <directory name="src/DataProvider" />
+            <directory name="src/DataFixtures" />
+            <directory name="src/TestController" />
             <file name="src/Kernel.php" />
         </ignoreFiles>
     </projectFiles>

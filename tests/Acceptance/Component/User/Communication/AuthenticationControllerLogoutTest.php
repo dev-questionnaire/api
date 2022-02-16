@@ -68,7 +68,7 @@ class AuthenticationControllerLogoutTest extends WebTestCase
         $response = $this->client->getResponse();
         $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(401);
         self::assertFalse($content['logout']);
         self::assertSame('user not logged in', $content['error']);
     }

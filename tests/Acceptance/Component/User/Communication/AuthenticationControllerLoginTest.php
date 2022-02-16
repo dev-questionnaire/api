@@ -6,11 +6,13 @@ namespace App\Tests\Acceptance\Component\User\Communication;
 use App\Component\User\Communication\AuthenticationController;
 use App\Component\User\Communication\UserController;
 use App\DataFixtures\UserFixtures;
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AuthenticationControllerLoginTest extends WebTestCase
@@ -21,6 +23,7 @@ class AuthenticationControllerLoginTest extends WebTestCase
     protected HttpClientInterface $httpClient;
     protected string $apiUrl;
     protected KernelBrowser $client;
+    protected UserPasswordHasherInterface $userPasswordHasher;
 
     protected function setUp(): void
     {
@@ -39,6 +42,7 @@ class AuthenticationControllerLoginTest extends WebTestCase
         $this->httpClient = $container->get(HttpClientInterface::class);
 
         $this->apiUrl = $container->get(ParameterBagInterface::class)->get('api.url');
+        $this->userPasswordHasher = $container->get(UserPasswordHasherInterface::class);
 
         $fixtures = $container->get(UserFixtures::class);
         $fixtures->load($this->entityManager);
@@ -71,8 +75,7 @@ class AuthenticationControllerLoginTest extends WebTestCase
         $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertResponseIsSuccessful('200');
-        self::assertFalse($content['success']); //No connection to 8000
-        //self::assertTrue($content['success']);
+        self::assertTrue($content['success']);
     }
 
     public function testLoginNegativ(): void
@@ -115,5 +118,31 @@ class AuthenticationControllerLoginTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(401);
         self::assertSame('Invalid credentials.', $content['error']);
+    }
+
+    public function testTokenGeneratedFalse(): void
+    {
+        $user = new User();
+        $user
+            ->setEmail('negativTest@cec.valantic.com')
+            ->setPassword($this->userPasswordHasher->hashPassword($user, 'negativ'))
+            ->setToken('negativTest@cec.valantic.com')
+            ->setRoles(['ROLE_USER']);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->client->jsonRequest('POST',
+            $this->apiUrl . '/api/login', [
+                'username' => 'negativTest@cec.valantic.com',
+                'password' => 'negativ',
+            ]
+        );
+
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertFalse($content['success']);
     }
 }

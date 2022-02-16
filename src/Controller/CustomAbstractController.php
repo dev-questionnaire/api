@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Persistence\Repository\UserRepositoryInterface;
+use App\DataProvider\UserDataProvider;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,29 +16,27 @@ use Symfony\Component\HttpFoundation\Request;
 class CustomAbstractController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private EntityManagerInterface $entityManager,
+        private FacadeInterface $facade,
     ) {
     }
 
     protected function authenticate(string $token, string $role = 'ROLE_USER'): bool
     {
-        $user = $this->userRepository->findOneBy(['token' => $token]);
+        $userDataProvider = $this->facade->findByToken($token);
 
-        if (!$user instanceof User) {
+        if (!$userDataProvider instanceof UserDataProvider) {
             return false;
         }
 
-        if (new \DateTime() > $user->getTokenTime()) {
+        if (new \DateTime() > $userDataProvider->getTokenTime()) {
             return false;
         }
 
-        if (in_array($role, $user->getRoles(), true) === false) {
+        if (in_array($role, $userDataProvider->getRoles(), true) === false) {
             return false;
         }
 
-        $user->setTokenTime(new \DateTime('+ 60 Minutes'));
-        $this->entityManager->flush();
+        $this->facade->extendLoggedInTime($token);
 
         return true;
     }

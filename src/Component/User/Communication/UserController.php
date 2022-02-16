@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Component\User\Communication;
 
+use App\Component\User\Business\FacadeInterface;
 use App\Controller\CustomAbstractController;
+use App\DataProvider\UserDataProvider;
 use App\Entity\User;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +17,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends CustomAbstractController
 {
     public function __construct(
-        private UserRepository         $userRepository,
-        private EntityManagerInterface $entityManager,
+        private FacadeInterface $facade,
     ) {
-        parent::__construct($this->userRepository, $this->entityManager);
+        parent::__construct($this->facade);
     }
 
     #[Route('/api/user/findById', name: 'api_user_findById', methods: 'GET')]
@@ -47,17 +46,17 @@ class UserController extends CustomAbstractController
             ]);
         }
 
-        $user = $this->userRepository->find($id);
+        $userDataProvider = $this->facade->findById($id);
 
-        if (!$user instanceof User) {
+        if (!$userDataProvider instanceof UserDataProvider) {
             return $this->json([
                 'message' => 'no user found',
             ]);
         }
 
         return $this->json([
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
+            'id' => $userDataProvider->getId(),
+            'email' => $userDataProvider->getEmail(),
         ]);
     }
 
@@ -78,50 +77,11 @@ class UserController extends CustomAbstractController
         }
 
         /** @var User $user */
-        $user = $this->userRepository->findOneBy(['token' => $token]);
+        $user = $this->facade->findByToken($token);
 
         return $this->json([
             'id' => $user->getId(),
             'email' => $user->getEmail(),
-        ]);
-    }
-
-    #[Route('/api/user/checkEmailTaken', name: 'api_user_checkEmailTaken', methods: 'GET')]
-    public function checkEmailTaken(Request $request): JsonResponse
-    {
-        $content = $this->getContent($request);
-
-        /** @var int $id */
-        $id = $content['id'] ?? 0;
-        /** @var string $email */
-        $email = $content['email'] ?? '';
-        /** @var string $token */
-        $token = $content['token'] ?? '';
-
-        $authenticate = $this->authenticate($token);
-
-        if (!$authenticate) {
-            return $this->json([
-                'message' => 'access not authorized',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        if ($email === '' || $id === 0) {
-            return $this->json([
-                'message' => 'no id or email provided',
-            ]);
-        }
-
-        $user = $this->userRepository->findByEmailExcludeId($email, $id);
-
-        if (empty($user)) {
-            return $this->json([
-                'found' => false,
-            ]);
-        }
-
-        return $this->json([
-            'found' => true,
         ]);
     }
 
@@ -141,19 +101,10 @@ class UserController extends CustomAbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $userListJson = [];
-
-        $userList = $this->userRepository->findAll();
-
-        foreach ($userList as $key => $user) {
-            $id = $user->getId() ?? $key;
-
-            $userListJson[$id]['id'] = $id;
-            $userListJson[$id]['email'] = $user->getEmail();
-        }
+        $userList = $this->facade->findAll();
 
         return $this->json(
-            $userListJson
+            $userList
         );
     }
 }

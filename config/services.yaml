@@ -20,3 +20,14 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    # Custom
+    App\Component\User\Business\Model\ValidateCreate:
+        arguments:
+            - '@App\Component\User\Business\Model\Verification\ValidateRegistrationEmail'
+            - '@App\Component\User\Business\Model\Verification\ValidatePasswords'
+
+    App\Component\User\Business\Model\ValidateUpdate:
+        arguments:
+            - '@App\Component\User\Business\Model\Verification\ValidateUpdateEmail'
+            - '@App\Component\User\Business\Model\Verification\ValidatePasswords'
