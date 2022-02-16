@@ -22,8 +22,7 @@ class AuthenticationController extends CustomAbstractController
     public function __construct(
         private FacadeInterface $facade,
         private App             $app,
-    )
-    {
+    ) {
         parent::__construct($this->facade);
     }
 
