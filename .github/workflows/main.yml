@@ -45,6 +45,9 @@ jobs:
       - name: start docker
         run: docker-compose up -d
 
+      - name: start server on port 8001
+        run: php bin/console serve -d --port=8001
+
       - name: show docker containers
         run: docker ps -a
 
@@ -62,6 +65,10 @@ jobs:
 
       - name: run infection
         run: php vendor/bin/infection
+
+      - name: stop server
+        if: always()
+        run: php bin/console server:stop
 
       - name: Stop docker
         if: always()
