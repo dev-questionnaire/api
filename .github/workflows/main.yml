@@ -69,3 +69,7 @@ jobs:
       - name: Stop docker
         if: always()
         run: docker-compose down
+
+      - name: Stop server
+        if: always()
+        run: symfony server:stop
