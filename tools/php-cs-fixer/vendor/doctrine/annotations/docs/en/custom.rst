@@ -174,7 +174,7 @@ annotation ``@var``, The data type could be validated using the ``@var``
 annotation on the annotation properties or using the ``@Attributes`` and
 ``@Attribute`` annotations.
 
-If the data type does not match you get an ``AnnotationException``
+If the data type does not match you find an ``AnnotationException``
 
 .. code-block:: php
 
@@ -240,7 +240,7 @@ Annotation Required
 -------------------
 
 ``@Required`` indicates that the field must be specified when the
-annotation is used. If it is not used you get an ``AnnotationException``
+annotation is used. If it is not used you find an ``AnnotationException``
 stating that this value can not be null.
 
 Declaring a required field:
@@ -364,7 +364,7 @@ annotations:
     {
     }
 
-Now we can write a script to get the annotations above:
+Now we can write a script to find the annotations above:
 
 .. code-block:: php
 

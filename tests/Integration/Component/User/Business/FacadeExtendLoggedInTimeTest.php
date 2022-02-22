@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Business;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\Component\User\Persistence\EntityManager\UserEntityManagerInterface;
 use App\DataFixtures\UserFixtures;
 use App\DataProvider\UserDataProvider;
@@ -16,7 +16,7 @@ class FacadeExtendLoggedInTimeTest extends KernelTestCase
 {
     protected EntityManagerInterface $entityManager;
     protected UserRepository $userRepository;
-    protected FacadeInterface $facade;
+    protected FacadeUserInterface $facade;
 
     protected function setUp(): void
     {
@@ -31,7 +31,7 @@ class FacadeExtendLoggedInTimeTest extends KernelTestCase
         $userFixtures = $container->get(UserFixtures::class);
         $userFixtures->load($this->entityManager);
 
-        $this->facade = $container->get(FacadeInterface::class);
+        $this->facade = $container->get(FacadeUserInterface::class);
         $this->userRepository = $container->get(UserRepository::class);
     }
 

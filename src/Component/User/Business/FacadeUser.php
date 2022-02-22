@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Component\User\Business;
 
 use App\Component\User\Business\Model\CreateUser;
-use App\Component\User\Business\Model\FindAllMappedAsArray;
+use App\Component\User\Business\Model\FindAllFormattedAsArray;
 use App\Component\User\Business\Model\UpdateUser;
 use App\Component\User\Persistence\EntityManager\UserEntityManagerInterface;
 use App\Component\User\Persistence\Repository\UserRepositoryInterface;
 use App\DataProvider\UserDataProvider;
 use App\DataProvider\ErrorDataProvider;
 
-class Facade implements FacadeInterface
+class FacadeUser implements FacadeUserInterface
 {
     public function __construct(
         private CreateUser                 $createUser,
         private UpdateUser                 $updateUser,
-        private FindAllMappedAsArray       $findAllMappedAsArray,
+        private FindAllFormattedAsArray    $findAllFormattedAsArray,
         private UserEntityManagerInterface $userEntityManager,
         private UserRepositoryInterface    $userRepository,
     ) {
@@ -38,25 +38,21 @@ class Facade implements FacadeInterface
         return $this->userRepository->findByToken($token);
     }
 
-    /**
-     * @return array<array-key, array<array-key, int|string|null>>
-     */
-    public function findAll(): array
+    public function getAllFormattedAsArray(): array
     {
-        return $this->findAllMappedAsArray->findAll();
+        return $this->findAllFormattedAsArray->findAll();
     }
 
-    /**
-     * @return array<array-key, ErrorDataProvider>
-     */
+    public function getAll(): array
+    {
+        return $this->userRepository->findAll();
+    }
+
     public function create(UserDataProvider $userDataProvider): array
     {
         return $this->createUser->create($userDataProvider);
     }
 
-    /**
-     * @return array<array-key, ErrorDataProvider>
-     */
     public function update(UserDataProvider $userDataProvider): array
     {
         return $this->updateUser->update($userDataProvider);
@@ -80,5 +76,12 @@ class Facade implements FacadeInterface
     public function delete(int $userId): void
     {
         $this->userEntityManager->delete($userId);
+    }
+
+    public function doesUserExist(int $id): bool
+    {
+        $user = $this->userRepository->findById($id);
+
+        return $user instanceof UserDataProvider;
     }
 }

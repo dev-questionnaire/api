@@ -7,7 +7,7 @@ namespace App\Component\User\Persistence\Mapper;
 use App\DataProvider\UserDataProvider;
 use App\Entity\User;
 
-class UserMapper
+class UserMapperToDataProvider
 {
     public function map(User $user): ?UserDataProvider
     {

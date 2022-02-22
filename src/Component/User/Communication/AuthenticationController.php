@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Component\User\Communication;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\Controller\CustomAbstractController;
 use App\DataProvider\UserDataProvider;
 use App\Entity\User;
@@ -20,10 +20,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class AuthenticationController extends CustomAbstractController
 {
     public function __construct(
-        private FacadeInterface $facade,
-        private App             $app,
+        private FacadeUserInterface $facadeUser,
+        private App                 $app,
     ) {
-        parent::__construct($this->facade);
+        parent::__construct($this->facadeUser);
     }
 
     #[Route('/api/login', name: 'api_login', methods: 'POST')]
@@ -42,7 +42,7 @@ class AuthenticationController extends CustomAbstractController
 
         $jwt = JWT::encode($payload, $kernelSecret, 'HS256');
 
-        $this->facade->setToken($email, $jwt);
+        $this->facadeUser->setToken($email, $jwt);
 
         $tokenId = $email . '-' . (new \DateTime())->format('Y-m-d_H-i-s');
 
@@ -97,7 +97,7 @@ class AuthenticationController extends CustomAbstractController
         /** @var string $token */
         $token = $content['token'] ?? '';
 
-        $userDataProvider = $this->facade->findByToken($token);
+        $userDataProvider = $this->facadeUser->findByToken($token);
 
         if (!$userDataProvider instanceof UserDataProvider) {
             return $this->json([
@@ -106,7 +106,7 @@ class AuthenticationController extends CustomAbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $this->facade->removeToken($token);
+        $this->facadeUser->removeToken($token);
 
         return $this->json([
             'logout' => true,

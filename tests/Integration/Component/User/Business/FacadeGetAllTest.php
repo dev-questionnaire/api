@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Business;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\DataFixtures\UserFixtures;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class FacadeFindAllTest extends KernelTestCase
+class FacadeGetAllTest extends KernelTestCase
 {
     protected EntityManagerInterface $entityManager;
-    protected FacadeInterface $facade;
+    protected FacadeUserInterface $facade;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class FacadeFindAllTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->facade = $container->get(FacadeInterface::class);
+        $this->facade = $container->get(FacadeUserInterface::class);
 
         $fixtures = $container->get(UserFixtures::class);
         $fixtures->load($this->entityManager);
@@ -45,18 +45,16 @@ class FacadeFindAllTest extends KernelTestCase
 
     public function testFindAll(): void
     {
-        $userDataProviderList = $this->facade->findAll();
+        $userDataProviderList = $this->facade->getAll();
 
         self::assertCount(2, $userDataProviderList);
 
-        $userDataProvider = $userDataProviderList[1];
+        $user = $userDataProviderList[1];
 
-        self::assertSame(1, $userDataProvider['id']);
-        self::assertSame('user@cec.valantic.com', $userDataProvider['email']);
+        self::assertSame('user@cec.valantic.com', $user->getEmail());
 
-        $userDataProvider = $userDataProviderList[2];
+        $user = $userDataProviderList[2];
 
-        self::assertSame(2, $userDataProvider['id']);
-        self::assertSame('admin@cec.valantic.com', $userDataProvider['email']);
+        self::assertSame('admin@cec.valantic.com', $user->getEmail());
     }
 }

@@ -6,6 +6,7 @@
 parameters:
     api.url: '%env(API_URL)%'
     app.url: '%env(APP_URL)%'
+    app_content_folder: '%kernel.project_dir%/%env(APP_CONTENT_FOLDER_NAME)%'
 services:
     # default configuration for services in *this* file
     _defaults:

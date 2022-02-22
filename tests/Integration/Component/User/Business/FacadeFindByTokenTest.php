@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Business;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\Component\User\Persistence\EntityManager\UserEntityManagerInterface;
 use App\Component\User\Persistence\Repository\UserRepositoryInterface;
 use App\DataFixtures\UserFixtures;
@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class FacadeFindByTokenTest extends KernelTestCase
 {
     protected EntityManagerInterface $entityManager;
-    protected FacadeInterface $facade;
+    protected FacadeUserInterface $facade;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class FacadeFindByTokenTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->facade = $container->get(FacadeInterface::class);
+        $this->facade = $container->get(FacadeUserInterface::class);
         $userEntityManager = $container->get(UserEntityManagerInterface::class);
 
         $fixtures = $container->get(UserFixtures::class);

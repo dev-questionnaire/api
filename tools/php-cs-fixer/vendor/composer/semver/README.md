@@ -83,7 +83,7 @@ Intervals::haveIntersections(ConstraintInterface $a, ConstraintInterface $b);
 Intervals::compactConstraint(ConstraintInterface $constraint);
 
 // Creates an array of numeric intervals and branch constraints representing a given constraint
-Intervals::get(ConstraintInterface $constraint);
+Intervals::find(ConstraintInterface $constraint);
 
 // Clears the memoization cache when you are done processing constraints
 Intervals::clear()

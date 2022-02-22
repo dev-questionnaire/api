@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\Component\User\Persistence\Repository\UserRepositoryInterface;
 use App\DataProvider\UserDataProvider;
 use App\Entity\User;
@@ -16,13 +16,13 @@ use Symfony\Component\HttpFoundation\Request;
 class CustomAbstractController extends AbstractController
 {
     public function __construct(
-        private FacadeInterface $facade,
+        private FacadeUserInterface $facadeUser,
     ) {
     }
 
-    protected function authenticate(string $token, string $role = 'ROLE_USER'): bool
+    protected function authenticate(string $token, string $role = 'ROLE_USER'): bool|UserDataProvider
     {
-        $userDataProvider = $this->facade->findByToken($token);
+        $userDataProvider = $this->facadeUser->findByToken($token);
 
         if (!$userDataProvider instanceof UserDataProvider) {
             return false;
@@ -36,9 +36,9 @@ class CustomAbstractController extends AbstractController
             return false;
         }
 
-        $this->facade->extendLoggedInTime($token);
+        $this->facadeUser->extendLoggedInTime($token);
 
-        return true;
+        return $userDataProvider;
     }
 
     /**

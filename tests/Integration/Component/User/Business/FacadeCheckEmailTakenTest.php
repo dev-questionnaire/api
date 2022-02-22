@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Business;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\DataFixtures\UserFixtures;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class FacadeCheckEmailTakenTest extends KernelTestCase
 {
     protected EntityManagerInterface $entityManager;
-    protected FacadeInterface $facade;
+    protected FacadeUserInterface $facade;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class FacadeCheckEmailTakenTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->facade = $container->get(FacadeInterface::class);
+        $this->facade = $container->get(FacadeUserInterface::class);
 
         $fixtures = $container->get(UserFixtures::class);
         $fixtures->load($this->entityManager);

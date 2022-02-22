@@ -7,7 +7,7 @@ namespace App\Component\User\Business;
 use App\DataProvider\UserDataProvider;
 use App\DataProvider\ErrorDataProvider;
 
-interface FacadeInterface
+interface FacadeUserInterface
 {
     public function findById(int $id): ?UserDataProvider;
 
@@ -18,7 +18,12 @@ interface FacadeInterface
     /**
      * @return array<array-key, array<array-key, int|string|null>>
      */
-    public function findAll(): array;
+    public function getAllFormattedAsArray(): array;
+
+    /**
+     * @return array<array-key, UserDataProvider|null>
+     */
+    public function getAll(): array;
 
     /**
      * @return array<array-key, ErrorDataProvider>
@@ -37,4 +42,6 @@ interface FacadeInterface
     public function removeToken(string $token): void;
 
     public function delete(int $userId): void;
+
+    public function doesUserExist(int $id): bool;
 }

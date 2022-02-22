@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Persistance\EntityManager;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\Component\User\Persistence\EntityManager\UserEntityManagerInterface;
 use App\DataFixtures\UserFixtures;
 use App\DataProvider\UserDataProvider;

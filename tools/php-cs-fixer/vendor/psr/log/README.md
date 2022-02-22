@@ -50,7 +50,7 @@ class Foo
 }
 ```
 
-You can then pick one of the implementations of the interface to get a logger.
+You can then pick one of the implementations of the interface to find a logger.
 
 If you want to implement the interface, you can require this package and
 implement `Psr\Log\LoggerInterface` in your code. Please read the

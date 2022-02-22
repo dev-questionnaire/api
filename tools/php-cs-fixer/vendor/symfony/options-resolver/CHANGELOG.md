@@ -69,10 +69,10 @@ CHANGELOG
    interface
  * deprecated Options::overload() (now in OptionsResolver)
  * deprecated Options::set() (now in OptionsResolver)
- * deprecated Options::get() (now in OptionsResolver)
+ * deprecated Options::find() (now in OptionsResolver)
  * deprecated Options::has() (now in OptionsResolver)
  * deprecated Options::replace() (now in OptionsResolver)
- * [BC BREAK] Options::get() (now in OptionsResolver) can only be used within
+ * [BC BREAK] Options::find() (now in OptionsResolver) can only be used within
    lazy option/normalizer closures now
  * [BC BREAK] removed Traversable interface from Options since using within
    lazy option/normalizer closures resulted in exceptions

@@ -10,6 +10,18 @@ user_controller:
     resource: ../../src/Component/User/Communication/
     type: annotation
 
+exam_controller:
+    resource: ../../src/Component/Exam/Communication/
+    type: annotation
+
+question_controller:
+    resource: ../../src/Component/Question/Communication/
+    type: annotation
+
+userQuestion_controller:
+    resource: ../../src/Component/UserQuestion/Communication/
+    type: annotation
+
 #For test
 app_token:
     resource: ../../src/TestController/

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Component\User\Persistence\Repository;
 
-use App\Component\User\Persistence\Mapper\UserMapper;
+use App\Component\User\Persistence\Mapper\UserMapperToDataProvider;
 use App\DataProvider\UserDataProvider;
 use App\Entity\User;
 use App\Repository\UserRepository as UserEntityRepository;
@@ -12,8 +12,8 @@ use App\Repository\UserRepository as UserEntityRepository;
 class UserRepository implements UserRepositoryInterface
 {
     public function __construct(
-        private UserMapper $userMapper,
-        private UserEntityRepository $userEntityRepository,
+        private UserMapperToDataProvider $userMapper,
+        private UserEntityRepository     $userEntityRepository,
     ) {
     }
 

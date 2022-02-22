@@ -9,12 +9,12 @@ CHANGELOG
 5.0.0
 -----
 
- * Removed support for passing `null` as 1st (`$id`) argument of `Section::get()` method, pass a valid child section identifier instead.
+ * Removed support for passing `null` as 1st (`$id`) argument of `Section::find()` method, pass a valid child section identifier instead.
 
 4.4.0
 -----
 
- * Deprecated passing `null` as 1st (`$id`) argument of `Section::get()` method, pass a valid child section identifier instead.
+ * Deprecated passing `null` as 1st (`$id`) argument of `Section::find()` method, pass a valid child section identifier instead.
 
 3.4.0
 -----

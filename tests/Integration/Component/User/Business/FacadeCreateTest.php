@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Component\User\Business;
 
-use App\Component\User\Business\FacadeInterface;
+use App\Component\User\Business\FacadeUserInterface;
 use App\DataFixtures\UserFixtures;
 use App\DataProvider\UserDataProvider;
 use App\Repository\UserRepository;
@@ -15,7 +15,7 @@ class FacadeCreateTest extends KernelTestCase
 {
     protected EntityManagerInterface $entityManager;
     protected UserRepository $userRepository;
-    protected FacadeInterface $facade;
+    protected FacadeUserInterface $facade;
     protected UserPasswordHasherInterface $userPasswordHasher;
 
     protected function setUp(): void
@@ -30,7 +30,7 @@ class FacadeCreateTest extends KernelTestCase
 
         $container->get(UserFixtures::class)->load($this->entityManager);
 
-        $this->facade = $container->get(FacadeInterface::class);
+        $this->facade = $container->get(FacadeUserInterface::class);
         $this->userRepository = $container->get(UserRepository::class);
         $this->userPasswordHasher = $container->get(UserPasswordHasherInterface::class);
     }

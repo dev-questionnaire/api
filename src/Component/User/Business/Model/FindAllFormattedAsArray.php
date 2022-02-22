@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Component\User\Business\Model;
 
+use App\Component\User\Persistence\Mapper\UserMapperToArray;
 use App\Component\User\Persistence\Repository\UserRepositoryInterface;
 use App\DataProvider\UserDataProvider;
-use App\Entity\User;
 
-class FindAllMappedAsArray
+class FindAllFormattedAsArray
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
+        protected UserMapperToArray $userMapperToArray,
     ) {
     }
 
@@ -26,13 +27,12 @@ class FindAllMappedAsArray
 
         /**
          * @var int $key
-         * @var User $user
+         * @var UserDataProvider $userDataProvider
          */
-        foreach ($userDataProviderList as $key => $user) {
-            $id = $user->getId() ?? $key;
+        foreach ($userDataProviderList as $key => $userDataProvider) {
+            $id = $userDataProvider->getId() ?? $key;
 
-            $userListJson[$id]['id'] = $id;
-            $userListJson[$id]['email'] = $user->getEmail();
+            $userListJson[$id] = $this->userMapperToArray->map($userDataProvider);
         }
 
         return $userListJson;
